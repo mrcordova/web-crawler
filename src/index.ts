@@ -1,5 +1,6 @@
 import { argv } from "node:process";
 import { crawlPage } from "./crawl";
+import { printReport } from "./report";
 async function main() {
   const cliArgs = argv.slice(2);
   if (cliArgs.length != 1) {
@@ -9,7 +10,7 @@ async function main() {
   const baseURL = cliArgs[0];
   console.log(`url given ${baseURL}`);
   const pages = await crawlPage(baseURL, baseURL);
-  console.log(pages);
+  printReport(baseURL, pages);
   process.exit(0);
 }
 main();
