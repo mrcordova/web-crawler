@@ -1,5 +1,5 @@
 import { argv } from "node:process";
-import { getHTML } from "./crawl";
+import { crawlPage } from "./crawl";
 async function main() {
   const cliArgs = argv.slice(2);
   if (cliArgs.length != 1) {
@@ -8,7 +8,8 @@ async function main() {
   }
   const baseURL = cliArgs[0];
   console.log(`url given ${baseURL}`);
-  await getHTML(baseURL);
+  const pages = await crawlPage(baseURL, baseURL);
+  console.log(pages);
   process.exit(0);
 }
 main();

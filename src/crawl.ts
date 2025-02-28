@@ -33,17 +33,51 @@ export function getURLsFromHTML(html: string, baseURL: string) {
 export async function getHTML(url: string) {
   try {
     const res = await fetch(url);
+    // console.log("here");
     if (!res.ok) {
       console.error(`Response status: ${res.status}`);
-      return;
+      return "";
     }
     if (!res.headers.get("Content-Type")?.includes("text/html")) {
       console.error(`content type is not html`);
-      return;
+      return "";
     }
     const html = await res.text();
-    console.log(html);
+    // console.log(html);
+    return html;
   } catch (error) {
     console.error(`in getHTML ${error}`);
+    return "";
+  }
+}
+
+export async function crawlPage(
+  baseURL: string,
+  currentURL: string,
+  pages: Record<string, number> = {}
+) {
+  const currentHostname = new URL(currentURL).hostname;
+  const baseHostname = new URL(baseURL).hostname;
+  if (currentHostname != baseHostname) {
+    return pages;
+  }
+  const normalizeCurrentURL = normalizeURL(currentURL);
+  if (pages[normalizeCurrentURL]) {
+    pages[normalizeCurrentURL] += 1;
+    return pages;
+  }
+  console.log(`crawling ${currentURL}`);
+  pages[normalizeCurrentURL] = 1;
+  try {
+    const html = await getHTML(currentURL);
+    // console.log(`get html: ${html}`);
+    const urls = getURLsFromHTML(html, baseURL);
+    for (const url of urls) {
+      pages = await crawlPage(baseURL, url, pages);
+    }
+    return pages;
+  } catch (error) {
+    console.error(`crawl page: ${error}`);
+    return pages;
   }
 }
