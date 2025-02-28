@@ -29,3 +29,21 @@ export function getURLsFromHTML(html: string, baseURL: string) {
 
   return urls;
 }
+
+export async function getHTML(url: string) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`Response status: ${res.status}`);
+      return;
+    }
+    if (!res.headers.get("Content-Type")?.includes("text/html")) {
+      console.error(`content type is not html`);
+      return;
+    }
+    const html = await res.text();
+    console.log(html);
+  } catch (error) {
+    console.error(`in getHTML ${error}`);
+  }
+}
